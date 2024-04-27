@@ -1,0 +1,24 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "author": "Haven Selph",
+  "description": "Discord bot for nameless MC",
+  "license": "LGPL-3.0-or-later",
+  "main": "index.js",
+  "keywords": [],
+  "scripts": {
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "discord.js": "^14.12.1",
+    "dotenv": "^16.4.5",
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "eslint": "^9.1.1",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "commonjs",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipDefaultLibCheck": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "strict": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["./node_modules/**/*"]
+}
