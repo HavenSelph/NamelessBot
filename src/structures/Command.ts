@@ -1,6 +1,12 @@
-import { ExecuteFunction, ExtendedInteraction } from "../types/command";
+import {
+  Command,
+  ExecuteFunction,
+  ExtendedInteraction,
+} from "../types/command";
 
-function useSubcommands(
+export interface CommandData extends Command {}
+
+export function useSubcommands(
   interaction: ExtendedInteraction,
 ): [string | null, string] {
   if (!interaction.isChatInputCommand())
@@ -16,8 +22,7 @@ interface SubCommandHandler {
   execute: ExecuteFunction;
 }
 
-function newSubcommandHandler(
-  interaction: ExtendedInteraction,
+export function newSubcommandHandler(
   handlers: SubCommandHandler[],
 ): ExecuteFunction {
   const handler_map = new Map<string, ExecuteFunction>();
@@ -28,7 +33,7 @@ function newSubcommandHandler(
     let [group, command] = useSubcommands(options.interaction);
     let name = `${group || ""}/${command}`;
     let execute = handler_map.get(name);
-    if (!execute) throw new Error(`Unknown handler name: ${name}`);
+    if (!execute) throw new Error(`No handler defined for ${name}`);
     return execute(options);
   };
 }
