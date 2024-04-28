@@ -1,10 +1,12 @@
 import { ExtendedClient } from "../structures/Client";
 import {
+  ApplicationCommandDataResolvable,
   ChatInputApplicationCommandData,
   CommandInteraction,
   CommandInteractionOptionResolver,
   GuildMember,
   SlashCommandBuilder,
+  SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
 
 export interface ExtendedInteraction extends CommandInteraction {
@@ -19,7 +21,7 @@ export interface ExecuteOptions {
 
 export type ExecuteFunction = (options: ExecuteOptions) => Promise<any>;
 
-export interface CommandData {
-  data: SlashCommandBuilder;
+export interface Command {
+  data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
   execute: ExecuteFunction;
 }

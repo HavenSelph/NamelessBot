@@ -9,7 +9,7 @@ import {
 import { RegisterCommandsOptions } from "../types/client";
 import { Event } from "./Event";
 import * as fg from "fast-glob";
-import { CommandData } from "../types/command";
+import { CommandData } from "./Command";
 
 interface ExtendedClientOptions extends ClientOptions {
   guildId?: string;
@@ -37,9 +37,10 @@ export class ExtendedClient extends Client {
 
   async registerCommands({ commands, guildId }: RegisterCommandsOptions) {
     if (guildId) {
-      console.log(`Guild ID (${guildId}) specified, doing quick register.`);
+      console.log(
+        `Guild ID (${guildId}) specified, registering commands locally.`,
+      );
       this.guilds.cache.get(guildId)?.commands.set(commands);
-      console.log(commands);
     } else {
       console.log("No guild ID specified, registering commands globally.");
       this.application?.commands.set(commands);

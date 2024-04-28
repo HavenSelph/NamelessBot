@@ -1,4 +1,4 @@
-import { CommandData } from "../../types/command";
+import { CommandData } from "../../structures/Command";
 import { SlashCommandBuilder } from "discord.js";
 
 export default {
