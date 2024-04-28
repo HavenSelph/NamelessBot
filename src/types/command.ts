@@ -1,7 +1,5 @@
 import { ExtendedClient } from "../structures/Client";
 import {
-  ApplicationCommandDataResolvable,
-  ChatInputApplicationCommandData,
   CommandInteraction,
   CommandInteractionOptionResolver,
   GuildMember,
