@@ -1,4 +1,3 @@
-import { Snowflake } from "discord.js";
 import * as fs from "node:fs";
 
 interface WhitelistEntry {
@@ -37,7 +36,7 @@ export class Whitelist {
     if (!resp.success) return null;
     return resp.data.player.id;
   }
-  async add(discord_id: Snowflake, minecraft_username: string) {
+  async add(discord_id: string, minecraft_username: string) {
     // fixme: We should honestly create a user object with their real cased username and uuid, maybe even some other info.
     const uuid = await this.get_uuid(minecraft_username);
     if (!uuid)
