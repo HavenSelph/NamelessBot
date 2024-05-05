@@ -1,6 +1,15 @@
 {
-  "BOT_TOKEN": "",
-  "APPLICATION_ID": "",
-  "GUILD_ID": "",
-  "WHITELIST_PATH": ""
+  "bot_token": "",
+  "application_id": "",
+  "guild_id": "",
+  "whitelist_path": "../whitelist.json",
+  "whitelist_sync_seconds": 50,
+  "whitelist_collection_name": "",
+  "db": {
+    "url": "",
+    "username": "",
+    "password": "",
+    "name": "",
+    "app_name": ""
+  }
 }

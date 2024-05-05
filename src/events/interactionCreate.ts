@@ -1,7 +1,7 @@
 import { CommandInteractionOptionResolver } from "discord.js";
 import { ExtendedInteraction } from "../types/command";
 import { Event } from "../structures/Event";
-import { client } from "../index";
+import { bot_client as client } from "../index";
 
 export default new Event("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;

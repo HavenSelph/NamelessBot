@@ -106,9 +106,28 @@ export default {
             await interaction.editReply(err.message);
           });
         if (!entry) return;
-        await interaction.editReply(
-          `Bound minecraft account \`${entry.minecraft_username} (${entry.minecraft_uuid})\` to <@${user.id}>.`,
-        );
+        const embed = new EmbedBuilder()
+          .setTitle("Success")
+          .setImage(entry.minecraft_avatar)
+          .addFields([
+            { name: "User", value: `<@${entry.discord_id}>` },
+            {
+              name: "Username",
+              value: entry.minecraft_username,
+              inline: true,
+            },
+            {
+              name: "UUID",
+              value: entry.minecraft_uuid,
+              inline: true,
+            },
+            {
+              name: "Date",
+              value: new Date(entry.added_on).toDateString(),
+              inline: true,
+            },
+          ]);
+        await interaction.editReply({ embeds: [embed] });
       },
     },
     {
@@ -116,17 +135,15 @@ export default {
       execute: async ({ interaction, args }) => {
         await interaction.deferReply({ ephemeral: true });
         const user = args.getUser("user", true);
-        const result = await whitelist.remove(
-          (entry) => entry.discord_id === user.id,
-        );
-        if (result.length > 0) {
+        const result = await whitelist.removeMany({
+          discord_id: user.id,
+        });
+        if (result.acknowledged && result.deletedCount > 0) {
           await interaction.editReply(
-            `Removed <@${user.id}> from the whitelist.`,
+            `Deleted all whitelist entries for <@${user.id}>`,
           );
         } else {
-          await interaction.editReply(
-            `No whitelist entries with <@${user.id}>.`,
-          );
+          await interaction.editReply(`No whitelist entries for <@${user.id}>`);
         }
       },
     },
@@ -135,31 +152,34 @@ export default {
       execute: async ({ interaction, args }) => {
         await interaction.deferReply({ ephemeral: true });
         const username = args.getString("minecraft_username", true);
-        const result = await whitelist.remove(
-          (entry) => entry.minecraft_username === username,
-        );
-        if (result.length > 0) {
+        const result = await whitelist.removeOne({
+          minecraft_username: { $regex: username, $options: "i" },
+        });
+        if (result.acknowledged && result.deletedCount > 0) {
           return interaction.editReply(
             `Removed \`${username}\` from the whitelist.`,
           );
         } else {
           return interaction.editReply(
-            "No whitelist entries with that minecraft account.",
+            `\`${username}\` is not in the whitelist.`,
           );
         }
       },
     },
     {
       name: "/list",
-      execute: async ({ client, interaction }) => {
+      execute: async ({ interaction }) => {
         await interaction.deferReply({ ephemeral: true });
         const embed = new EmbedBuilder().setTitle("Nameless SMP Whitelist");
         let users = "";
         let accounts = "";
         let times = "";
-        if (whitelist.data.length === 0)
-          return interaction.editReply("There are no whitelist entries.");
-        for (const user of whitelist.data) {
+        const data = await whitelist.queryMany({});
+        if (data.length === 0) {
+          await interaction.editReply("There are no whitelist entries!");
+          return;
+        }
+        for (const user of data) {
           users += `\n<@${user.discord_id}>`;
           accounts += `\n${user.minecraft_username}`;
           times += `\n${new Date(user.added_on).toLocaleDateString()}`;
@@ -179,12 +199,10 @@ export default {
       execute: async ({ interaction, args }) => {
         await interaction.deferReply({ ephemeral: true });
         const user = args.getUser("user", true);
-        const entries = await whitelist.filter(
-          (entry) => entry.discord_id === user.id,
-        );
+        const entries = await whitelist.queryMany({ discord_id: user.id });
         if (entries.length === 0)
           return interaction.editReply(
-            `<@${user.id}> has no whitelist entries.`,
+            `No whitelist entries for <@${user.id}>`,
           );
         const embed = new EmbedBuilder().setTitle(`Whitelist Entries`);
         let accounts = "";
@@ -208,16 +226,35 @@ export default {
       execute: async ({ interaction, args }) => {
         await interaction.deferReply({ ephemeral: true });
         const username = args.getString("minecraft_username", true);
-        const entry = await whitelist.filter(
-          (entry) => entry.minecraft_username === username,
-        );
-        if (entry.length > 0) {
-          await interaction.editReply(
-            `<@${entry[0].discord_id}> - \`${entry[0].minecraft_username} (${entry[0].minecraft_uuid})\` *${new Date(entry[0].added_on).toDateString()}*`,
-          );
-        } else {
+        const entry = await whitelist.queryOne({
+          minecraft_username: { $regex: username, $options: "i" },
+        });
+        if (!entry) {
           await interaction.editReply(`\`${username}\` is not whitelisted.`);
+          return;
         }
+        const embed = new EmbedBuilder()
+          .setTitle("Whitelist Entry")
+          .setImage(entry.minecraft_avatar)
+          .addFields([
+            { name: "User", value: `<@${entry.discord_id}>` },
+            {
+              name: "Username",
+              value: entry.minecraft_username,
+              inline: true,
+            },
+            {
+              name: "UUID",
+              value: entry.minecraft_uuid,
+              inline: true,
+            },
+            {
+              name: "Date",
+              value: new Date(entry.added_on).toDateString(),
+              inline: true,
+            },
+          ]);
+        await interaction.editReply({ embeds: [embed] });
       },
     },
   ]),

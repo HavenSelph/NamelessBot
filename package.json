@@ -14,7 +14,8 @@
   "dependencies": {
     "discord.js": "^14.12.1",
     "dotenv": "^16.4.5",
-    "fast-glob": "^3.3.2"
+    "fast-glob": "^3.3.2",
+    "mongodb": "^6.6.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
