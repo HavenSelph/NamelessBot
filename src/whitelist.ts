@@ -33,7 +33,7 @@ export class Whitelist {
       return { name: entry.minecraft_username, uuid: entry.minecraft_uuid };
     });
     fs.writeFile(this.path, JSON.stringify(data_mapped, null, 2), (err) => {
-      if (err) throw err;
+      if (err) return console.error(err);
       this.changed = false;
       console.log(`Successfully synced ${data.length} entries to disk.`);
     });
