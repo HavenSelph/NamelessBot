@@ -16,7 +16,7 @@ export const db = db_client.db(config.db.name);
 
 export const bot_client = new ExtendedClient({
   guildId: config.guild_id,
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
 export const whitelist = new Whitelist(config.whitelist_path);
