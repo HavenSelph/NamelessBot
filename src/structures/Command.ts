@@ -33,7 +33,13 @@ export function newSubcommandHandler(
     let [group, command] = useSubcommands(options.interaction);
     let name = `${group || ""}/${command}`;
     let execute = handler_map.get(name);
-    if (!execute) throw new Error(`No handler defined for ${name}`);
+    if (!execute) {
+      console.error(`No handler defined for ${name}!`);
+      await options.interaction.reply(
+        "Internal error, let the developer know.",
+      );
+      return null;
+    }
     return execute(options);
   };
 }
