@@ -4,7 +4,6 @@
   "guild_id": "",
   "whitelist_path": "../whitelist.json",
   "whitelist_sync_seconds": 50,
-  "whitelist_collection_name": "",
   "db": {
     "url": "",
     "username": "",
