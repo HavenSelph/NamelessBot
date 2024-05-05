@@ -2,3 +2,4 @@ config.json
 .idea
 dist
 node_modules
+whitelist.json
