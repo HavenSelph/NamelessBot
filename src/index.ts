@@ -19,7 +19,7 @@ export const bot_client = new ExtendedClient({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
 });
 
-export const whitelist = new Whitelist(config.whitelist_path);
+export const whitelist = new Whitelist(config.whitelist_path, config.guild_id);
 
 async function run() {
   await db_client.connect();
@@ -27,8 +27,11 @@ async function run() {
   console.log(
     `Connected to MongoDB as ${config.db.username} @ ${config.db.url}`,
   );
+  bot_client.on("ready", () => {
+    whitelist.start_sync(config.whitelist_sync_seconds * 1000);
+    whitelist.start_audit(config.whitelist_audit_minutes * 1000 * 60);
+  });
   bot_client.start(config.bot_token);
-  whitelist.start_sync(config.whitelist_sync_seconds);
 }
 
 //Cleanups

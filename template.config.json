@@ -4,6 +4,7 @@
   "guild_id": "",
   "whitelist_path": "../whitelist.json",
   "whitelist_sync_seconds": 50,
+  "whitelist_audit_minutes": 120,
   "db": {
     "url": "",
     "username": "",

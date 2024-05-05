@@ -8,6 +8,36 @@ import {
   SlashCommandUserOption,
 } from "discord.js";
 import { whitelist } from "../index";
+import { WhitelistEntry } from "../whitelist";
+
+function makeEmbed(
+  entry: WhitelistEntry,
+  title: string = "Whitelist Entry",
+): EmbedBuilder {
+  return new EmbedBuilder()
+    .setTitle(title)
+    .setImage(entry.minecraft_avatar)
+    .addFields([
+      { name: "User", value: `<@${entry.discord_id}>`, inline: true },
+      { name: "Type", value: entry.type, inline: true },
+      { name: "\u200b", value: "\u200b" },
+      {
+        name: "Username",
+        value: entry.minecraft_username,
+        inline: true,
+      },
+      {
+        name: "UUID",
+        value: entry.minecraft_uuid,
+        inline: true,
+      },
+      {
+        name: "Date",
+        value: new Date(entry.added_on).toDateString(),
+        inline: true,
+      },
+    ]);
+}
 
 export default {
   data: new SlashCommandBuilder()
@@ -106,27 +136,7 @@ export default {
             await interaction.editReply(err.message);
           });
         if (!entry) return;
-        const embed = new EmbedBuilder()
-          .setTitle("Success")
-          .setImage(entry.minecraft_avatar)
-          .addFields([
-            { name: "User", value: `<@${entry.discord_id}>` },
-            {
-              name: "Username",
-              value: entry.minecraft_username,
-              inline: true,
-            },
-            {
-              name: "UUID",
-              value: entry.minecraft_uuid,
-              inline: true,
-            },
-            {
-              name: "Date",
-              value: new Date(entry.added_on).toDateString(),
-              inline: true,
-            },
-          ]);
+        const embed = makeEmbed(entry, "Success");
         await interaction.editReply({ embeds: [embed] });
       },
     },
@@ -233,27 +243,7 @@ export default {
           await interaction.editReply(`\`${username}\` is not whitelisted.`);
           return;
         }
-        const embed = new EmbedBuilder()
-          .setTitle("Whitelist Entry")
-          .setImage(entry.minecraft_avatar)
-          .addFields([
-            { name: "User", value: `<@${entry.discord_id}>` },
-            {
-              name: "Username",
-              value: entry.minecraft_username,
-              inline: true,
-            },
-            {
-              name: "UUID",
-              value: entry.minecraft_uuid,
-              inline: true,
-            },
-            {
-              name: "Date",
-              value: new Date(entry.added_on).toDateString(),
-              inline: true,
-            },
-          ]);
+        const embed = makeEmbed(entry);
         await interaction.editReply({ embeds: [embed] });
       },
     },
