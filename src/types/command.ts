@@ -20,6 +20,10 @@ export interface ExecuteOptions {
 export type ExecuteFunction = (options: ExecuteOptions) => Promise<any>;
 
 export interface Command {
-  data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
+  data:
+    | SlashCommandBuilder
+    | SlashCommandSubcommandsOnlyBuilder
+    | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
   execute: ExecuteFunction;
+  enabled?: boolean;
 }

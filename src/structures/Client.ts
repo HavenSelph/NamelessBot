@@ -59,6 +59,7 @@ export class ExtendedClient extends Client {
         console.error(`Ignoring command (invalid config): ${commandPath}`);
         continue;
       }
+      if (command.enabled === false) continue;
       this.commands.set(command.data.name, command);
       commands.push(command.data.toJSON());
     }
