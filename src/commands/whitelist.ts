@@ -14,29 +14,28 @@ function makeEmbed(
   entry: WhitelistEntry,
   title: string = "Whitelist Entry",
 ): EmbedBuilder {
-  return new EmbedBuilder()
-    .setTitle(title)
-    .setImage(entry.minecraft_avatar)
-    .addFields([
-      { name: "User", value: `<@${entry.discord_id}>`, inline: true },
-      { name: "Type", value: entry.type, inline: true },
-      { name: "\u200b", value: "\u200b" },
-      {
-        name: "Username",
-        value: entry.minecraft_username,
-        inline: true,
-      },
-      {
-        name: "UUID",
-        value: entry.minecraft_uuid,
-        inline: true,
-      },
-      {
-        name: "Date",
-        value: new Date(entry.added_on).toDateString(),
-        inline: true,
-      },
-    ]);
+  const embed = new EmbedBuilder().setTitle(title).addFields([
+    { name: "User", value: `<@${entry.discord_id}>`, inline: true },
+    { name: "Type", value: entry.type, inline: true },
+    { name: "\u200b", value: "\u200b" },
+    {
+      name: "Username",
+      value: entry.minecraft_username,
+      inline: true,
+    },
+    {
+      name: "UUID",
+      value: entry.minecraft_uuid,
+      inline: true,
+    },
+    {
+      name: "Date",
+      value: new Date(entry.added_on).toDateString(),
+      inline: true,
+    },
+  ]);
+  if (entry.minecraft_avatar) embed.setImage(entry.minecraft_avatar);
+  return embed;
 }
 
 export default {
