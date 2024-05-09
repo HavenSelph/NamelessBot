@@ -40,14 +40,14 @@ export async function generate_map(
   const region_z = (z >> 4) >> 5;
 
   const tiles: mergeImages.ImageSource[] = [];
-  for (let dy = -radius; dy <= radius; dy++) {
+  for (let dz = -radius; dz <= radius; dz++) {
     for (let dx = -radius; dx <= radius; dx++) {
       let image = await fetchImage(
-        `https://mc.playnameless.net/tiles/${world}/0/${renderer}/${region_x + dx}_${region_z - dy}.png`,
+        `https://mc.playnameless.net/tiles/${world}/0/${renderer}/${region_x + dx}_${region_z - dz}.png`,
       );
       if (!image) continue;
       const col = radius + dx;
-      const row = radius - dy;
+      const row = radius - dz;
       tiles.push({
         src: image,
         x: offset + tile_size * col,
