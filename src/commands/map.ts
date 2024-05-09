@@ -39,7 +39,7 @@ export default {
         .setName("radius")
         .setDescription("Number of tiles surrounding the coordinates.")
         .setMinValue(0)
-        .setMaxValue(3),
+        .setMaxValue(1),
     ),
   execute: async ({ interaction, args }) => {
     await interaction.deferReply();
