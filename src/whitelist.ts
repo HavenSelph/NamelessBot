@@ -9,7 +9,7 @@ export interface WhitelistEntry {
   type: "Bedrock" | "Java";
   minecraft_username: string;
   minecraft_uuid: string;
-  minecraft_avatar: string;
+  minecraft_avatar?: string;
 }
 
 export class Whitelist {
@@ -66,23 +66,23 @@ export class Whitelist {
       console.log(`Successfully synced ${data.length} entries to disk.`);
     });
   }
-  async get_account(minecraft_username: string) {
-    const is_bedrock = minecraft_username.startsWith(".");
+  async get_account(minecraft_username: string, type: string) {
+    const is_bedrock = type === "bedrock";
     const resp = await fetch(
-      `https://playerdb.co/api/player/${is_bedrock ? "xbox" : "minecraft"}/${is_bedrock ? minecraft_username.slice(1) : minecraft_username}`,
+      `https://playerdb.co/api/player/${is_bedrock ? "xbox" : "minecraft"}/${minecraft_username}`,
     ).then((res) => res.json());
     if (!resp.success) return;
     let uuid: string = resp.data.player.id;
     if (is_bedrock) uuid = toUUID(Number(uuid).toString(16).padStart(32, "0"));
     return {
       username: `${is_bedrock ? "." : ""}${resp.data.player.username}`,
-      avatar: is_bedrock ? "" : resp.data.player.avatar,
+      avatar: is_bedrock ? undefined : resp.data.player.avatar,
       uuid,
     };
   }
-  async add(discord_id: string, minecraft_username: string) {
-    const is_bedrock = minecraft_username.startsWith(".");
-    const account = await this.get_account(minecraft_username);
+  async add(discord_id: string, minecraft_username: string, type: string) {
+    const is_bedrock = type === "bedrock";
+    const account = await this.get_account(minecraft_username, type);
     if (!account && is_bedrock) {
       // Bedrock account
       throw new Error(`${minecraft_username} is not a Bedrock account!`);
