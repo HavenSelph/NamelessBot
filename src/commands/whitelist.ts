@@ -1,6 +1,7 @@
 import { CommandData, newSubcommandHandler } from "../structures/Command";
 import {
   EmbedBuilder,
+  SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandStringOption,
   SlashCommandSubcommandBuilder,
@@ -176,6 +177,18 @@ export default {
       new SlashCommandSubcommandBuilder()
         .setName("list")
         .setDescription("Show a list of all whitelist Entries."),
+    )
+    .addSubcommand(
+      new SlashCommandSubcommandBuilder()
+        .setName("clear")
+        .setDescription("WARNING: Clears the entire whitelist.")
+        .addBooleanOption(
+          new SlashCommandBooleanOption()
+            .setName("confirm")
+            .setDescription(
+              "Enable this flag to allow the command to run. WARNING: No going back!",
+            ),
+        ),
     ),
   execute: newSubcommandHandler([
     {
@@ -286,6 +299,27 @@ export default {
         await interaction.editReply({
           embeds: [embed],
         });
+      },
+    },
+    {
+      name: "/clear",
+      execute: async ({ interaction, args }) => {
+        await interaction.deferReply({ ephemeral: true });
+        const confirm = args.getBoolean("confirm", false);
+        if (!confirm)
+          return await interaction.editReply(
+            "Are you sure you want to clear the whitelist? If so please rerun the command with the confirm option set to true.",
+          );
+        const result = await whitelist.removeMany({});
+        if (!result.acknowledged)
+          return await interaction.editReply(
+            "Something went wrong, please try again.",
+          );
+        if (result.deletedCount > 0)
+          return interaction.editReply(
+            `Successfully removed ${result.deletedCount} entries from the whitelist.`,
+          );
+        return interaction.editReply("The whitelist is already empty.");
       },
     },
   ]),
