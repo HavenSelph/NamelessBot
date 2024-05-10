@@ -5,7 +5,7 @@ import {
   SlashCommandNumberOption,
   SlashCommandStringOption,
 } from "discord.js";
-import { generate_map } from "../map/map";
+import { generate_map } from "../map";
 
 export default {
   data: new SlashCommandBuilder()
