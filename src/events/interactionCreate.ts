@@ -11,14 +11,17 @@ export default new Event("interactionCreate", async (interaction) => {
   console.info(
     `Running [${interaction.commandName}] for @${interaction.user.displayName} (${interaction.user.id})`,
   );
-  await command
-    .execute({
+  try {
+    await command.execute({
       client,
       interaction: interaction as ExtendedInteraction,
       args: interaction.options as CommandInteractionOptionResolver,
-    })
-    .catch((err) => {
-      console.log(err);
-      interaction.followUp("An error occurred, please let Haven know.");
     });
+  } catch (err) {
+    console.log(err);
+    const error_message = `An error occurred, please let Haven know, and include this message:
+\`\`\`Command: ${interaction.commandName}\n\n${interaction.options}\n\n${interaction.toString()}\`\`\``;
+    if (!interaction.replied) interaction.editReply(error_message);
+    else interaction.reply(error_message);
+  }
 });
