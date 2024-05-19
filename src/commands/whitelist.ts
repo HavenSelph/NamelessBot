@@ -1,6 +1,11 @@
 import { CommandData, newSubcommandHandler } from "../structures/Command";
 import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ComponentType,
   EmbedBuilder,
+  PermissionsBitField,
   SlashCommandBooleanOption,
   SlashCommandBuilder,
   SlashCommandStringOption,
@@ -94,6 +99,10 @@ export default {
   data: new SlashCommandBuilder()
     .setName("whitelist")
     .setDescription("Interact with the NamelessSMP whitelist.")
+    .setDefaultMemberPermissions(
+      PermissionsBitField.Flags.BanMembers |
+        PermissionsBitField.Flags.KickMembers,
+    )
     .addSubcommand(
       new SlashCommandSubcommandBuilder()
         .setName("add")
@@ -289,15 +298,68 @@ export default {
       name: "/list",
       execute: async ({ interaction }) => {
         await interaction.deferReply({ ephemeral: true });
-        const data = await whitelist.queryMany({});
-        if (data.length === 0)
-          return await interaction.editReply("There are no whitelist entries!");
-        const embed = makeEntryListEmbed(
-          data,
-          "Nameless SMP Whitelist Entries",
+        const limit = 20;
+        let skip = 0;
+        let total = await whitelist.count({});
+        if (total === 0)
+          return await interaction.editReply("No entries found.");
+        const embed = async () => {
+          const data = await whitelist.queryManyPaginated({}, skip, limit);
+          const embed = makeEntryListEmbed(
+            data,
+            "Nameless SMP Whitelist Entries",
+          );
+          embed.setFooter({
+            text: `Page ${Math.floor(skip / limit) + 1} of ${Math.ceil(total / limit)} - ${data.length} ${data.length === 1 ? "entry" : "entries"} of ${total} total.`,
+          });
+          return embed;
+        };
+        if (total <= limit) {
+          // Why make a book if you only have one page
+          return await interaction.editReply({ embeds: [await embed()] });
+        }
+        const PreviousPage = new ButtonBuilder()
+          .setLabel("Previous")
+          .setEmoji("⬅️")
+          .setStyle(ButtonStyle.Secondary)
+          .setCustomId("prev");
+        const NextPage = new ButtonBuilder()
+          .setLabel("Next")
+          .setEmoji("➡")
+          .setStyle(ButtonStyle.Primary)
+          .setCustomId("next");
+        const Buttons = new ActionRowBuilder<ButtonBuilder>().addComponents(
+          PreviousPage,
+          NextPage,
         );
-        await interaction.editReply({
-          embeds: [embed],
+        const reply = await interaction.editReply({
+          embeds: [await embed()],
+          components: [Buttons],
+        });
+        const collector = reply.createMessageComponentCollector({
+          componentType: ComponentType.Button,
+          time: 60 * 1000,
+        });
+        collector.on("collect", async (collected) => {
+          collector.resetTimer();
+          await collected.deferUpdate();
+          const offset = collected.customId === "next" ? limit : -limit;
+          if (skip + offset < 0 || skip + offset >= total)
+            return console.log("[whitelist] /list: out of bounds -");
+          skip += offset;
+          await interaction.editReply({
+            embeds: [await embed()],
+            components: [Buttons],
+          });
+        });
+        collector.on("end", async () => {
+          // Disable buttons
+          PreviousPage.setDisabled(true);
+          NextPage.setDisabled(true);
+          await interaction.editReply({
+            content: "Run this command again to continue scrolling the pages.",
+            embeds: [await embed()],
+          });
         });
       },
     },

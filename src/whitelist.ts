@@ -123,6 +123,21 @@ export class Whitelist {
     return await this.collection.findOne(query);
   }
   async queryMany(query: Filter<WhitelistEntry>) {
-    return await this.collection.find(query).toArray();
+    return this.collection.find(query).toArray();
+  }
+
+  async queryManyPaginated(
+    query: Filter<WhitelistEntry>,
+    skip: number = 0,
+    limit: number = 15,
+  ) {
+    return this.collection.find(query).skip(skip).limit(limit).toArray();
+  }
+
+  async count(query: Filter<WhitelistEntry>) {
+    if (Object.keys(query).length === 0)
+      // Fast count ?cached? documents
+      return await this.collection.estimatedDocumentCount();
+    else return await this.collection.countDocuments(query);
   }
 }
