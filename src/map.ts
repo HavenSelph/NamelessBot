@@ -57,7 +57,7 @@ export async function generate_map(
   }
 
   // Create the image
-  const map_buf = fs.readFileSync(__dirname + "/../../../assets/map.png");
+  const map_buf = fs.readFileSync(__dirname + "/../assets/Map.png");
   const map = await sharp(map_buf)
     .resize({ width: size, height: size, kernel: "nearest" })
     .toBuffer();
