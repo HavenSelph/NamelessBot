@@ -16,6 +16,10 @@ import {
 import { whitelist } from "../index";
 import { WhitelistEntry } from "../whitelist";
 
+function escapeMarkdown(text: string): string {
+  return text.replace("_", "\\_");
+}
+
 function makeEntryListEmbed(
   data: WhitelistEntry[],
   title: string = "Whitelist Entries",
@@ -31,7 +35,7 @@ function makeEntryListEmbed(
   }
   embed.addFields(
     { name: "User", value: users, inline: true },
-    { name: "Account", value: accounts, inline: true },
+    { name: "Account", value: escapeMarkdown(accounts), inline: true },
     { name: "Date", value: times, inline: true },
   );
   return embed;
@@ -47,7 +51,7 @@ function makeEntryEmbed(
     { name: "\u200b", value: "\u200b" },
     {
       name: "Username",
-      value: entry.minecraft_username,
+      value: escapeMarkdown(entry.minecraft_username),
       inline: true,
     },
     {
